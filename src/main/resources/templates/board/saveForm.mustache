@@ -6,18 +6,50 @@
         <div class="card-body">
             <form action="#">
                 <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Enter author" name="author">
+                    <input type="text" class="form-control" placeholder="Enter author" id="author">
                 </div>
                 <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Enter title" name="title">
+                    <input type="text" class="form-control" placeholder="Enter title" id="title">
                 </div>
                 <div class="mb-3">
-                    <textarea class="form-control" rows="5" name="content"></textarea>
+                    <textarea class="form-control" rows="5" id="content"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary form-control">글쓰기완료</button>
+                <button type="button" onclick="writeBoard()" class="btn btn-primary form-control">글쓰기완료</button>
             </form>
         </div>
     </div>
 </div>
+<script>
+    //     // 아래 함수 작성하기 전에,
+    //     // 1. button -> type button으로!!
+    //     // 2. input name을 id로 변경하기
+    //     async function writeBoard() {
+    //     // 1. id 값 찾아서 requestBody 오브젝트에 넣기
+    //
+    //     // 2. fetch post 요청하기
+    //
+    //     // 3. 마지막에 아래 코드로 페이지 이동하기
+    //     location.href = "/";
+    // }
+    async function writeBoard() {
+        let requestBody = {
+            title: document.querySelector("#title").value,
+            content: document.querySelector("#content").value,
+            author: document.querySelector("#author").value,
+        };
 
+        let response = await fetch("http://localhost:8080/api/boards", {
+            method: "post",
+            body: JSON.stringify(requestBody),
+            headers: {"Content-Type": "application/json"},
+        });
+        let responseBody = await response.json();
+        console.log(responseBody)
+        alert("글 들어감");
+        location.href = "/";
+    }
+
+    // location.href = "/"; 리다이렉트임
+    //location.reload();
+</script>
 {{> layout/footer}}
