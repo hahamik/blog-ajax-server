@@ -19,35 +19,32 @@
         </div>
     </div>
 </div>
+
 <script>
-    //     // 아래 함수 작성하기 전에,
-    //     // 1. button -> type button으로!!
-    //     // 2. input name을 id로 변경하기
-    //     async function writeBoard() {
-    //     // 1. id 값 찾아서 requestBody 오브젝트에 넣기
-    //
-    //     // 2. fetch post 요청하기
-    //
-    //     // 3. 마지막에 아래 코드로 페이지 이동하기
-    //     location.href = "/";
-    // }
+    // 아래 함수 작성하기 전에,
+    // 1. button -> type button으로!!
+    // 2. input name을 id로 변경하기
     async function writeBoard() {
+        // 1. id 값 찾아서 requestBody 오브젝트에 넣기
         let requestBody = {
-            title: document.querySelector("#title").value,
-            content: document.querySelector("#content").value,
             author: document.querySelector("#author").value,
+            title: document.querySelector("#title").value,
+            content: document.querySelector("#content").value
         };
 
-        let response = await fetch("http://localhost:8080/api/boards", {
+        // 2. fetch post 요청하기
+        let response = await fetch("/api/boards", {
             method: "post",
             body: JSON.stringify(requestBody),
-            headers: {"Content-Type": "application/json"},
+            headers: {"Content-Type": "application/json"}
         });
         let responseBody = await response.json();
-        console.log(responseBody)
-        alert("글 들어감");
+        console.log(responseBody);
+
+        // 3. 마지막에 아래 코드로 페이지 이동하기
         location.href = "/";
     }
+
 
     // location.href = "/"; 리다이렉트임
     //location.reload();
