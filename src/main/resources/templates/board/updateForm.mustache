@@ -1,74 +1,70 @@
 {{> layout/header}}
 
 <div class="container p-5">
-    <div class="card">
-        <div class="card-header"><b>익명 글수정 화면입니다</b></div>
-        <div class="card-body">
-            <form>
-                <input type="hidden" id="boardId" value="{{boardId}}">
-                <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Enter author" id="author">
-                </div>
-                <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Enter title" id="title">
-                </div>
-                <div class="mb-3">
-                    <textarea class="form-control" rows="5" id="content"></textarea>
-                </div>
-                <button type="button" onclick="updateBoard()" class="btn btn-primary form-control">글수정완료</button>
-            </form>
-        </div>
-    </div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>내용</th>
+            <th>작성자</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody id="board-box">
+
+        </tbody>
+    </table>
+
 </div>
 
 <script>
-    let boardId = document.querySelector("#boardId").value;
-    //let boardId2 = getCookie("boardId");
+
+    async function deleteBoard(boardId) {
+        let response = await fetch("/api/boards/" + boardId, {method: "delete"});
+        let responseBody = await response.json();
+        document.querySelector(`#item-${boardId}`).remove();
+
+    }
+
+
+    // 책임 : 컴퍼넌트 생성
+    function makeBoard(board) {
+        let tr = document.createElement("tr");
+        tr.setAttribute("id", `item-${board.id}`);
+        tr.innerHTML = `
+            <td>${board.id}</td>
+            <td>${board.title}</td>
+            <td>${board.content}</td>
+            <td>${board.author}</td>
+            <td>
+                <div class="d-flex">
+                    <form>
+                        <button type="button" class="btn btn-danger" onclick="deleteBoard(${board.id})">삭제</button>
+                    </form>
+                    <form action="/board/${board.id}/updateForm" method="get">
+                        <button class="btn btn-warning">수정</button>
+                    </form>
+                </div>
+            </td>`;
+        return tr;
+    }
 
     // 책임 : 통신
     async function init() {
-        let response = await fetch("/api/boards/" + boardId);
+        let response = await fetch("/api/boards");
         let responseBody = await response.json();
-        console.log(responseBody);
-        document.querySelector("#author").value = responseBody.body.author;
-        document.querySelector("#title").value = responseBody.body.title;
-        document.querySelector("#content").value = responseBody.body.content;
+
+        let boardList = responseBody.body;
+        //console.log(boardList);
+
+        let tbody = document.querySelector("#board-box");
+        boardList.forEach((board) => {
+            tbody.append(makeBoard(board));
+        });
     }
 
     init();
-
-    function getCookie(key) {
-        const cookies = document.cookie.split('; ');
-        for (let cookie of cookies) {
-            const [k, v] = cookie.split('=');
-            if (k === key) {
-                return v;
-            }
-        }
-        return null; // 해당 키가 없으면 null 반환
-    }
-
-    async function updateBoard() {
-        // 1. id 값 찾아서 requestBody 오브젝트에 넣기
-        let requestBody = {
-            author: document.querySelector("#author").value,
-            title: document.querySelector("#title").value,
-            content: document.querySelector("#content").value
-        };
-
-        // 2. fetch post 요청하기
-        let response = await fetch("/api/boards/" + boardId, {
-            method: "put",
-            body: JSON.stringify(requestBody),
-            headers: {"Content-Type": "application/json"}
-        });
-        let responseBody = await response.json();
-        console.log(responseBody)
-
-
-        // 3. 마지막에 아래 코드로 페이지 이동하기
-        // location.href = "/";
-    }
 </script>
 
 {{> layout/footer}}

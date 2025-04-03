@@ -23,14 +23,17 @@
     async function deleteBoard(boardId) {
         let response = await fetch("/api/boards/" + boardId, {method: "delete"})
         let responseBody = await response.json();
-        console.log(responseBody)
+        document.querySelector(`#item-${board.id}`).remove();
+        console.log(responseBody);
         location.reload();
     }
 
     // 책임 : 컴포넌트 하나 생성
     function makeBoard(board) {
         let tr = document.createElement("tr");
-        tr.innerHTML = `<td>${board.id}</td>
+        tr.setAttribute("id", `item-${board.id}`)
+        tr.innerHTML = `
+            <td>${board.id}</td>
             <td>${board.title}</td>
             <td>${board.content}</td>
             <td>${board.author}</td>
@@ -40,7 +43,7 @@
                         <button class="btn btn-danger" onclick="deleteBoard(${board.id})">삭제</button>
                     </form>
                     <form action="/board/${board.id}/updateForm" method="get">
-                        <button class="btn btn-warning">수정</button>
+                        <button type="button" class="btn btn-warning">수정</button>
                     </form>
                 </div>
             </td>`;
