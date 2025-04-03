@@ -20,6 +20,13 @@
 
 <script>
 
+    async function deleteBoard(boardId) {
+        let response = await fetch("/api/boards/" + boardId, {method: "delete"})
+        let responseBody = await response.json();
+        console.log(responseBody)
+        location.reload();
+    }
+
     // 책임 : 컴포넌트 하나 생성
     function makeBoard(board) {
         let tr = document.createElement("tr");

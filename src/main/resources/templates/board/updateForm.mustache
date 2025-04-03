@@ -4,7 +4,7 @@
     <div class="card">
         <div class="card-header"><b>익명 글수정 화면입니다</b></div>
         <div class="card-body">
-            <form action="#">
+            <form>
                 <input type="hidden" id="boardId" value="{{boardId}}">
                 <div class="mb-3">
                     <input type="text" class="form-control" placeholder="Enter author" id="author">
@@ -15,7 +15,7 @@
                 <div class="mb-3">
                     <textarea class="form-control" rows="5" id="content"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary form-control">글수정완료</button>
+                <button type="button" onclick="updateBoard()" class="btn btn-primary form-control">글수정완료</button>
             </form>
         </div>
     </div>
@@ -23,17 +23,19 @@
 
 <script>
     let boardId = document.querySelector("#boardId").value;
-    let boardId2 = getCookie("boardId");
+    //let boardId2 = getCookie("boardId");
 
     // 책임 : 통신
     async function init() {
-        let response = await fetch("/api/boards/" + boardId2);
+        let response = await fetch("/api/boards/" + boardId);
         let responseBody = await response.json();
-
+        console.log(responseBody);
         document.querySelector("#author").value = responseBody.body.author;
         document.querySelector("#title").value = responseBody.body.title;
         document.querySelector("#content").value = responseBody.body.content;
     }
+
+    init();
 
     function getCookie(key) {
         const cookies = document.cookie.split('; ');
@@ -46,7 +48,27 @@
         return null; // 해당 키가 없으면 null 반환
     }
 
-    init();
+    async function updateBoard() {
+        // 1. id 값 찾아서 requestBody 오브젝트에 넣기
+        let requestBody = {
+            author: document.querySelector("#author").value,
+            title: document.querySelector("#title").value,
+            content: document.querySelector("#content").value
+        };
+
+        // 2. fetch post 요청하기
+        let response = await fetch("/api/boards/" + boardId, {
+            method: "put",
+            body: JSON.stringify(requestBody),
+            headers: {"Content-Type": "application/json"}
+        });
+        let responseBody = await response.json();
+        console.log(responseBody)
+
+
+        // 3. 마지막에 아래 코드로 페이지 이동하기
+        // location.href = "/";
+    }
 </script>
 
 {{> layout/footer}}
